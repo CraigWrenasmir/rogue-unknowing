@@ -594,61 +594,6 @@
             .num-steps.two-cols { column-count: 1; }
         }
 
-        /* --- Terrain cards (hope / fear / tension / path) --- */
-        .terrain-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 18px;
-            max-width: 1160px;
-            margin: 0 auto;
-        }
-
-        .terrain-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            padding: 30px 22px 26px;
-            box-shadow: 0 6px 28px var(--glass-shadow);
-            position: relative;
-        }
-
-        .terrain-card::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 18px;
-            right: 18px;
-            height: 4px;
-            border-radius: 0 0 4px 4px;
-            opacity: 0.9;
-            background: var(--card, var(--lavender));
-        }
-
-        .terrain-num {
-            font-family: 'Space Mono', monospace;
-            font-size: 12px;
-            color: var(--lavender-deep);
-            letter-spacing: 2px;
-            margin-bottom: 12px;
-        }
-
-        .terrain-card h3 {
-            font-family: 'Space Mono', monospace;
-            font-size: clamp(16px, 1.9vw, 23px);
-            color: var(--text-dark);
-            line-height: 1.3;
-        }
-
-        @media (max-width: 900px) {
-            .terrain-grid { grid-template-columns: repeat(2, 1fr); }
-        }
-
-        @media (max-width: 560px) {
-            .terrain-grid { grid-template-columns: 1fr; }
-        }
-
         /* --- Two-card grid (melody/dissonance, version 1/2) --- */
         .duo-grid {
             display: grid;
@@ -921,7 +866,6 @@
             <canvas id="rogueCanvas" class="rogue-canvas" aria-hidden="true"></canvas>
             <div class="slide-inner">
                 <h1>Communication as<br>Rogue Unknowing</h1>
-                <p class="subtitle">How to speak in ways that help people think</p>
                 <div class="rainbow-bar"></div>
                 <p class="presenter">Craig Smith</p>
                 <p class="presenter-roles">Educator &middot; TEDx Speaker &middot; Author</p>
@@ -931,28 +875,8 @@
         <!-- 2 · Opening quote -->
         <section class="slide" data-slide="2">
             <div class="slide-inner">
-                <p class="big-quote">&ldquo;It ain&rsquo;t what you don&rsquo;t know that gets you into trouble. It&rsquo;s what you know for sure that just ain&rsquo;t so.&rdquo;</p>
+                <p class="big-quote">&ldquo;It ain&rsquo;t what you don&rsquo;t know that gets you into trouble. It&rsquo;s what you know for sure.&rdquo;</p>
                 <p class="big-quote-attr">Often attributed to Mark Twain</p>
-            </div>
-        </section>
-
-        <!-- 3 · Communication isn't one thing -->
-        <section class="slide slide-wide" data-slide="3">
-            <div class="slide-inner">
-                <h2 class="slide-heading">
-                    <span class="section-dot-lg" style="background:var(--accent-blue)"></span>
-                    Communication isn&rsquo;t one thing
-                </h2>
-                <div class="chip-cloud">
-                    <span class="cloud-chip" style="--chip:var(--accent-red)">Interpersonal communication</span>
-                    <span class="cloud-chip" style="--chip:var(--accent-orange)">Teaching</span>
-                    <span class="cloud-chip" style="--chip:var(--accent-yellow)">Public speaking</span>
-                    <span class="cloud-chip" style="--chip:var(--accent-green)">Media interviews</span>
-                    <span class="cloud-chip" style="--chip:var(--accent-blue)">Advocacy</span>
-                    <span class="cloud-chip" style="--chip:var(--lavender)">Writing</span>
-                    <span class="cloud-chip" style="--chip:var(--lavender-deep)">Listening</span>
-                    <span class="cloud-chip" style="--chip:var(--accent-red)">Thinking aloud with others</span>
-                </div>
             </div>
         </section>
 
@@ -1008,7 +932,7 @@
         <section class="slide slide-wide" data-slide="6">
             <div class="slide-inner">
                 <div class="activity-badge green">Activity 1 &middot; Atlas of the Self</div>
-                <p class="slide-text">Draw a map of yourself as a <strong>communicator</strong>.</p>
+                <p class="slide-text">Create a map of your <strong>interests</strong>.</p>
                 <div class="chip-cloud" style="margin-top: 32px;">
                     <span class="cloud-chip" style="--chip:var(--accent-red)">Music</span>
                     <span class="cloud-chip" style="--chip:var(--accent-orange)">Books / articles / ideas</span>
@@ -1065,7 +989,7 @@
         <section class="slide" data-slide="9">
             <div class="slide-inner">
                 <p class="key-idea-marker">// Key idea</p>
-                <p class="key-idea">Your atlas determines the bridges you can build.</p>
+                <p class="key-idea">Your atlas determines<br>the bridges you can build.</p>
                 <hr class="dotted-rule">
             </div>
         </section>
@@ -1094,14 +1018,14 @@
                     Build a bridge &mdash; choose one pair
                 </h2>
                 <div class="pair-grid">
-                    <div class="pair-row"><span>Autism support</span><span class="pair-link"></span><span>Video games</span></div>
-                    <div class="pair-row"><span>Artificial intelligence</span><span class="pair-link"></span><span>Gardening</span></div>
-                    <div class="pair-row"><span>Water supply</span><span class="pair-link"></span><span>Education</span></div>
-                    <div class="pair-row"><span>Mathematics</span><span class="pair-link"></span><span>Poetry</span></div>
-                    <div class="pair-row"><span>Music production</span><span class="pair-link"></span><span>Classroom behaviour</span></div>
-                    <div class="pair-row"><span>Public speaking</span><span class="pair-link"></span><span>Walking</span></div>
-                    <div class="pair-row"><span>Social media</span><span class="pair-link"></span><span>Memory</span></div>
-                    <div class="pair-row"><span>Architecture</span><span class="pair-link"></span><span>Empathy</span></div>
+                    <div class="pair-row"><span>Octopuses</span><span class="pair-link"></span><span>Democracy</span></div>
+                    <div class="pair-row"><span>Compost</span><span class="pair-link"></span><span>Forgiveness</span></div>
+                    <div class="pair-row"><span>Origami</span><span class="pair-link"></span><span>Space travel</span></div>
+                    <div class="pair-row"><span>Jazz</span><span class="pair-link"></span><span>The immune system</span></div>
+                    <div class="pair-row"><span>Lighthouses</span><span class="pair-link"></span><span>Loneliness</span></div>
+                    <div class="pair-row"><span>Tides</span><span class="pair-link"></span><span>Attention</span></div>
+                    <div class="pair-row"><span>Salt</span><span class="pair-link"></span><span>Memory</span></div>
+                    <div class="pair-row"><span>Earthquakes</span><span class="pair-link"></span><span>Rumours</span></div>
                 </div>
                 <ol class="num-steps" style="max-width: 820px;">
                     <li>What <strong>connects</strong> them?</li>
@@ -1138,6 +1062,7 @@
                     <span class="cloud-chip" style="--chip:var(--lavender-deep)">Data centres</span>
                     <span class="cloud-chip" style="--chip:var(--accent-red)">Disability &amp; inclusion</span>
                     <span class="cloud-chip" style="--chip:var(--accent-green)">Academic integrity</span>
+                    <span class="cloud-chip" style="--chip:var(--accent-orange)">Economics</span>
                     <span class="cloud-chip" style="--chip:var(--accent-blue)">Power</span>
                 </div>
             </div>
@@ -1159,40 +1084,11 @@
             </div>
         </section>
 
-        <!-- 15 · Map the terrain -->
-        <section class="slide slide-wide" data-slide="15">
-            <div class="slide-inner">
-                <h2 class="slide-heading" style="margin-bottom: 20px;">
-                    <span class="section-dot-lg" style="background:var(--accent-yellow)"></span>
-                    Before you argue, map the terrain
-                </h2>
-                <p class="slide-text-sm" style="margin-bottom: 40px;">A useful communication pattern:</p>
-                <div class="terrain-grid">
-                    <div class="terrain-card" style="--card:var(--accent-green)">
-                        <div class="terrain-num">// 01</div>
-                        <h3>Name the hope</h3>
-                    </div>
-                    <div class="terrain-card" style="--card:var(--accent-red)">
-                        <div class="terrain-num">// 02</div>
-                        <h3>Name the fear</h3>
-                    </div>
-                    <div class="terrain-card" style="--card:var(--accent-yellow)">
-                        <div class="terrain-num">// 03</div>
-                        <h3>Name the tension</h3>
-                    </div>
-                    <div class="terrain-card" style="--card:var(--accent-blue)">
-                        <div class="terrain-num">// 04</div>
-                        <h3>Offer your path through it</h3>
-                    </div>
-                </div>
-            </div>
-        </section>
-
         <!-- 16 · Key idea -->
         <section class="slide" data-slide="16">
             <div class="slide-inner">
                 <p class="key-idea-marker">// Key idea</p>
-                <p class="key-idea">Good communication starts with seeing, not speaking.</p>
+                <p class="key-idea">Good communication starts with noticing,<br>not speaking.</p>
                 <hr class="dotted-rule">
             </div>
         </section>
@@ -1344,9 +1240,9 @@
             <div class="slide-inner">
                 <h2 class="slide-heading" style="margin-bottom: 36px;">
                     <span class="section-dot-lg" style="background:var(--lavender)"></span>
-                    Preparing without killing the talk
+                    Preparing without reducing energy
                 </h2>
-                <p class="big-quote" style="font-size: clamp(1.4rem, 3.2vw, 2.5rem);">I did not want to memorise a script.<br>I wanted to learn how to move through the ideas.</p>
+                <p class="big-quote" style="font-size: clamp(1.4rem, 3.2vw, 2.5rem);">I do not want to memorise scripts.<br>I want to learn how to move through ideas.</p>
             </div>
         </section>
 
@@ -1491,7 +1387,7 @@
             <button class="arrow" id="prevBtn" aria-label="Previous slide">
                 <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
             </button>
-            <span id="counter">1 / 35</span>
+            <span id="counter">1 / 33</span>
         </div>
         <div class="hud-center" id="dots"></div>
         <div class="hud-right">
