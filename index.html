@@ -206,6 +206,7 @@
         .activity-badge.yellow { background: var(--accent-yellow); color: var(--text-dark); }
         .activity-badge.red    { background: var(--accent-red); }
         .activity-badge.lav    { background: var(--lavender-deep); }
+        .activity-badge.orange { background: var(--accent-orange); }
 
         /* --- Body text --- */
         .slide-text {
@@ -681,6 +682,67 @@
             .duo-grid { grid-template-columns: 1fr; }
         }
 
+        /* --- Embedded video --- */
+        .video-frame {
+            position: relative;
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto;
+            aspect-ratio: 16 / 9;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 14px 48px rgba(107, 107, 157, 0.28);
+            background: #000;
+        }
+
+        .video-frame iframe {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        /* --- Closing links --- */
+        .closing-links {
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+            flex-wrap: wrap;
+            margin-top: 52px;
+        }
+
+        .closing-link {
+            display: inline-flex;
+            align-items: baseline;
+            gap: 10px;
+            font-family: 'Space Mono', monospace;
+            font-size: clamp(13px, 1.5vw, 17px);
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-decoration: none;
+            color: var(--lavender-deep);
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 13px 24px;
+            border-radius: 999px;
+            box-shadow: 0 3px 14px var(--glass-shadow);
+            transition: all 0.2s;
+        }
+
+        .closing-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px var(--glass-shadow);
+            border-color: var(--lavender);
+        }
+
+        .closing-link span {
+            font-weight: 400;
+            font-size: clamp(11px, 1.2vw, 13px);
+            color: var(--text-light);
+            letter-spacing: 0.5px;
+        }
+
         /* --- Negation stack (Not perfect / Not generic / Not slick) --- */
         .negation-stack {
             display: flex;
@@ -949,28 +1011,6 @@
             </div>
         </section>
 
-        <!-- 7 · Dotted lines -->
-        <section class="slide" data-slide="7">
-            <div class="slide-inner">
-                <h2 class="slide-heading" style="margin-bottom: 24px;">
-                    <span class="section-dot-lg" style="background:var(--accent-green)"></span>
-                    Add dotted lines
-                </h2>
-                <p class="slide-text">Mark the <strong>edges of your curiosity</strong>.</p>
-                <p class="big-quote" style="font-size: clamp(1.3rem, 2.8vw, 2.1rem); margin-top: 28px;">What are you drawn to, but have not yet explored?</p>
-                <div class="dotted-card">
-                    <div class="dotted-label">// Out past the mapped edges</div>
-                    <ul class="big-list green" style="margin: 0;">
-                        <li>A field you think you are &ldquo;not good at&rdquo;</li>
-                        <li>A kind of art you do not understand</li>
-                        <li>A political question you avoid</li>
-                        <li>A technology you feel uncertain about</li>
-                        <li>A difficult book, idea, or practice</li>
-                    </ul>
-                </div>
-            </div>
-        </section>
-
         <!-- 8 · Pair share -->
         <section class="slide" data-slide="8">
             <div class="slide-inner">
@@ -1041,6 +1081,15 @@
                 <p class="key-idea-marker">// Key idea</p>
                 <p class="key-idea">Insight is often a connection someone else has not made yet.</p>
                 <hr class="dotted-rule">
+            </div>
+        </section>
+
+        <!-- Video interlude -->
+        <section class="slide slide-wide" data-slide="12.5">
+            <div class="slide-inner">
+                <div class="video-frame">
+                    <iframe src="https://www.youtube.com/embed/WCqCMUAmpuc?enablejsapi=1&rel=0" title="Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                </div>
             </div>
         </section>
 
@@ -1235,6 +1284,28 @@
             </div>
         </section>
 
+        <!-- Activity for later: poetry -->
+        <section class="slide" data-slide="24.5">
+            <div class="slide-inner">
+                <div class="activity-badge orange">Activity for later &middot; Poetry</div>
+                <ol class="num-steps" style="margin-top: 12px;">
+                    <li>Choose a poem that is <strong>not immediately simple</strong> &mdash; one that does not give itself away on first reading</li>
+                    <li>Learn it <strong>by heart</strong></li>
+                    <li>Recite it <strong>to somebody</strong></li>
+                    <li>As you speak, think about how you are communicating the poem&rsquo;s <strong>hidden intention</strong> &mdash; not just its words</li>
+                </ol>
+                <div class="dotted-card" style="margin-top: 36px;">
+                    <div class="dotted-label">// Starting points, if you need one</div>
+                    <ul class="big-list" style="margin: 0;">
+                        <li style="font-size: clamp(15px, 1.7vw, 20px);"><em>Tell all the truth but tell it slant</em> &mdash; Emily Dickinson</li>
+                        <li style="font-size: clamp(15px, 1.7vw, 20px);"><em>The Windhover</em> &mdash; Gerard Manley Hopkins</li>
+                        <li style="font-size: clamp(15px, 1.7vw, 20px);"><em>anyone lived in a pretty how town</em> &mdash; e.&thinsp;e.&thinsp;cummings</li>
+                        <li style="font-size: clamp(15px, 1.7vw, 20px);"><em>The Snow Man</em> &mdash; Wallace Stevens</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
         <!-- 25 · How I prepared my TEDx talk -->
         <section class="slide" data-slide="25">
             <div class="slide-inner">
@@ -1377,6 +1448,10 @@
             <div class="slide-inner">
                 <p class="big-quote">This is my way.<br>What is yours?</p>
                 <div class="rainbow-bar"></div>
+                <div class="closing-links">
+                    <a href="https://wrenasmir.com" target="_blank" rel="noopener" class="closing-link">wrenasmir.com <span>artistic works</span></a>
+                    <a href="https://theuniversalsandpit.org" target="_blank" rel="noopener" class="closing-link">theuniversalsandpit.org <span>education works</span></a>
+                </div>
             </div>
         </section>
 
@@ -1387,7 +1462,7 @@
             <button class="arrow" id="prevBtn" aria-label="Previous slide">
                 <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
             </button>
-            <span id="counter">1 / 33</span>
+            <span id="counter">1 / 34</span>
         </div>
         <div class="hud-center" id="dots"></div>
         <div class="hud-right">
@@ -1446,9 +1521,17 @@
                 }
             }
 
+            function pauseVideosIn(slide) {
+                var iframes = slide.querySelectorAll('iframe[src*="youtube.com"]');
+                iframes.forEach(function (f) {
+                    try { f.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*'); } catch (e) {}
+                });
+            }
+
             function goTo(idx, landAtEnd) {
                 if (idx < 0 || idx >= total || idx === current) return;
                 clearSteps(slides[current]);
+                pauseVideosIn(slides[current]);
                 slides[current].classList.remove('active');
                 current = idx;
                 var max = maxSteps(slides[current]);
