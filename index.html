@@ -1,0 +1,1798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Communication as Rogue Unknowing</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            color-scheme: light;
+            --lavender: #9090c0;
+            --lavender-deep: #6b6b9d;
+            --accent-red: #d64a4a;
+            --accent-orange: #cc785c;
+            --accent-yellow: #e8c547;
+            --accent-green: #5ab97a;
+            --accent-blue: #5a7ec2;
+            --text-dark: #2a2a3a;
+            --text-mid: #5a5a6a;
+            --text-light: #8a8a9a;
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(144, 144, 192, 0.3);
+            --glass-shadow: rgba(107, 107, 157, 0.15);
+            --page-bg: #f7f6f2;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--page-bg);
+            color: var(--text-dark);
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(circle at 12% 10%, rgba(144,144,192,0.16) 0%, transparent 50%),
+                radial-gradient(circle at 88% 88%, rgba(204,120,92,0.10) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* --- Deck container --- */
+        .deck {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+        }
+
+        /* --- Slides: one visible at a time, fade between --- */
+        .slide {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 64px 56px 96px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.45s ease, transform 0.45s ease;
+            transform: translateY(12px);
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .slide-inner {
+            max-width: 1100px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .slide-wide .slide-inner { max-width: 1240px; }
+
+        /* --- Title slide --- */
+        .slide-title h1 {
+            font-family: 'Space Mono', monospace;
+            font-size: clamp(2rem, 5vw, 4.2rem);
+            font-weight: 700;
+            color: var(--text-dark);
+            line-height: 1.18;
+            margin-bottom: 28px;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .slide-title .subtitle {
+            font-family: 'Newsreader', Georgia, serif;
+            font-style: italic;
+            font-size: clamp(18px, 2.4vw, 30px);
+            color: var(--text-mid);
+            line-height: 1.5;
+        }
+
+        .slide-title .presenter {
+            font-family: 'Space Mono', monospace;
+            font-size: clamp(13px, 1.5vw, 18px);
+            color: var(--text-dark);
+            letter-spacing: 1px;
+            margin-top: 44px;
+            font-weight: 700;
+        }
+
+        .slide-title .presenter-roles {
+            font-family: 'Space Mono', monospace;
+            font-size: clamp(11px, 1.2vw, 14px);
+            color: var(--lavender-deep);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 10px;
+        }
+
+        .rainbow-bar {
+            width: 140px;
+            height: 4px;
+            border-radius: 2px;
+            background: linear-gradient(90deg, var(--accent-red), var(--accent-yellow), var(--accent-green), var(--accent-blue));
+            margin: 40px auto 0;
+        }
+
+        /* Wandering rogue path on the title slide (sits behind the content) */
+        .rogue-canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .slide-title .slide-inner { position: relative; z-index: 1; }
+
+        /* --- Section headings --- */
+        .slide-heading {
+            font-family: 'Space Mono', monospace;
+            font-size: clamp(1.6rem, 3.6vw, 2.8rem);
+            font-weight: 700;
+            color: var(--text-dark);
+            line-height: 1.3;
+            margin-bottom: 40px;
+        }
+
+        .section-dot-lg {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 12px;
+            vertical-align: middle;
+            position: relative;
+            top: -2px;
+        }
+
+        /* --- Section / part marker --- */
+        .part-marker {
+            display: inline-block;
+            font-family: 'Space Mono', monospace;
+            font-size: clamp(11px, 1.3vw, 14px);
+            color: var(--lavender-deep);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 28px;
+            padding: 7px 18px;
+            border-radius: 999px;
+            background: rgba(144,144,192,0.15);
+            border: 1px solid var(--glass-border);
+        }
+
+        /* --- Activity badge --- */
+        .activity-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Space Mono', monospace;
+            font-size: clamp(12px, 1.4vw, 15px);
+            font-weight: 700;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            color: #fff;
+            padding: 9px 22px;
+            border-radius: 999px;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 18px var(--glass-shadow);
+        }
+
+        .activity-badge.green  { background: var(--accent-green); }
+        .activity-badge.blue   { background: var(--accent-blue); }
+        .activity-badge.yellow { background: var(--accent-yellow); color: var(--text-dark); }
+        .activity-badge.red    { background: var(--accent-red); }
+        .activity-badge.lav    { background: var(--lavender-deep); }
+
+        /* --- Body text --- */
+        .slide-text {
+            font-size: clamp(20px, 2.4vw, 32px);
+            line-height: 1.6;
+            color: var(--text-mid);
+            max-width: 820px;
+            margin: 0 auto;
+        }
+
+        .slide-text strong {
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        .slide-text-sm {
+            font-size: clamp(16px, 1.8vw, 24px);
+            line-height: 1.65;
+            color: var(--text-mid);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .slide-text-sm strong { color: var(--text-dark); font-weight: 600; }
+
+        /* --- Serif statements: quotes & key ideas --- */
+        .big-quote {
+            font-family: 'Newsreader', Georgia, serif;
+            font-style: italic;
+            font-weight: 500;
+            font-size: clamp(1.7rem, 4.2vw, 3.4rem);
+            line-height: 1.35;
+            color: var(--text-dark);
+            max-width: 980px;
+            margin: 0 auto;
+        }
+
+        .big-quote-attr {
+            font-family: 'Space Mono', monospace;
+            font-size: clamp(12px, 1.4vw, 16px);
+            color: var(--text-light);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 36px;
+        }
+
+        .key-idea-marker {
+            font-family: 'Space Mono', monospace;
+            font-size: clamp(11px, 1.3vw, 14px);
+            color: var(--lavender-deep);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 36px;
+        }
+
+        .key-idea {
+            font-family: 'Newsreader', Georgia, serif;
+            font-style: italic;
+            font-weight: 500;
+            font-size: clamp(1.7rem, 4vw, 3.2rem);
+            line-height: 1.4;
+            color: var(--text-dark);
+            max-width: 940px;
+            margin: 0 auto;
+        }
+
+        .dotted-rule {
+            width: 180px;
+            margin: 44px auto 0;
+            border: none;
+            border-top: 3px dotted var(--lavender);
+        }
+
+        /* --- Big bullet lists --- */
+        .big-list {
+            list-style: none;
+            padding: 0;
+            margin: 36px auto;
+            max-width: 760px;
+            text-align: left;
+        }
+
+        .big-list li {
+            font-size: clamp(19px, 2.1vw, 28px);
+            line-height: 1.5;
+            color: var(--text-mid);
+            padding: 11px 0 11px 36px;
+            position: relative;
+        }
+
+        .big-list li::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 21px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--lavender);
+        }
+
+        .big-list.red li::before { background: var(--accent-red); }
+        .big-list.blue li::before { background: var(--accent-blue); }
+        .big-list.green li::before { background: var(--accent-green); }
+        .big-list.yellow li::before { background: var(--accent-yellow); }
+
+        .big-list.two-cols {
+            column-count: 2;
+            column-gap: 48px;
+            max-width: 960px;
+        }
+
+        .big-list.two-cols li {
+            break-inside: avoid;
+            -webkit-column-break-inside: avoid;
+            page-break-inside: avoid;
+            font-size: clamp(16px, 1.8vw, 22px);
+            padding: 8px 0 8px 28px;
+        }
+
+        .big-list.two-cols li::before {
+            top: 18px;
+            width: 8px;
+            height: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .big-list.two-cols { column-count: 1; }
+        }
+
+        /* --- Highlight card --- */
+        .highlight-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 44px 52px;
+            margin: 36px auto;
+            max-width: 800px;
+            box-shadow: 0 8px 40px var(--glass-shadow), inset 0 1px 0 rgba(255,255,255,0.5);
+            position: relative;
+            text-align: left;
+        }
+
+        .highlight-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 24px;
+            right: 24px;
+            height: 4px;
+            border-radius: 0 0 4px 4px;
+            background: linear-gradient(90deg, var(--accent-red), var(--accent-yellow), var(--accent-green), var(--accent-blue));
+            opacity: 0.7;
+        }
+
+        .highlight-card p {
+            font-size: clamp(18px, 2vw, 26px);
+            line-height: 1.5;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        .highlight-card p + p { margin-top: 20px; }
+
+        .highlight-card strong { font-weight: 600; }
+
+        /* --- Dashed card: the edges of curiosity --- */
+        .dotted-card {
+            border: 2px dashed var(--lavender);
+            border-radius: 20px;
+            padding: 40px 48px;
+            margin: 36px auto;
+            max-width: 800px;
+            background: rgba(144, 144, 192, 0.06);
+            text-align: left;
+        }
+
+        .dotted-card .dotted-label {
+            font-family: 'Space Mono', monospace;
+            font-size: clamp(11px, 1.3vw, 14px);
+            color: var(--lavender-deep);
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            margin-bottom: 18px;
+        }
+
+        /* --- Chip cloud (atlas categories, AI domains, modes) --- */
+        .chip-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            justify-content: center;
+            max-width: 980px;
+            margin: 36px auto 0;
+        }
+
+        .cloud-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 11px;
+            font-family: 'Space Mono', monospace;
+            font-size: clamp(14px, 1.7vw, 21px);
+            font-weight: 700;
+            color: var(--text-dark);
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 13px 22px;
+            border-radius: 999px;
+            box-shadow: 0 3px 14px var(--glass-shadow);
+        }
+
+        .cloud-chip::before {
+            content: "";
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            background: var(--chip, var(--lavender));
+        }
+
+        .cloud-chip.dashed {
+            border-style: dashed;
+            border-color: var(--lavender);
+            background: rgba(144,144,192,0.06);
+            color: var(--text-mid);
+        }
+
+        /* --- TOC (session map) --- */
+        .toc-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 auto;
+            max-width: 880px;
+            display: flex;
+            flex-direction: column;
+            gap: 13px;
+            text-align: left;
+        }
+
+        .toc-row {
+            display: grid;
+            grid-template-columns: 60px 1fr;
+            gap: 24px;
+            align-items: baseline;
+            padding: 15px 22px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            box-shadow: 0 3px 14px var(--glass-shadow);
+        }
+
+        .toc-num {
+            font-family: 'Space Mono', monospace;
+            font-size: clamp(18px, 2vw, 26px);
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .toc-name {
+            font-family: 'Space Mono', monospace;
+            font-size: clamp(16px, 1.8vw, 23px);
+            font-weight: 700;
+            color: var(--text-dark);
+            display: block;
+        }
+
+        /* --- Bridge visual --- */
+        .bridge-stage {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            max-width: 880px;
+            margin: 44px auto 0;
+        }
+
+        .bridge-node {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 18px;
+            padding: 26px 34px;
+            box-shadow: 0 6px 28px var(--glass-shadow);
+            font-family: 'Space Mono', monospace;
+            font-size: clamp(15px, 1.8vw, 22px);
+            font-weight: 700;
+            color: var(--text-dark);
+            flex: 0 1 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .bridge-span {
+            flex: 1 1 120px;
+            min-width: 80px;
+            border-top: 3px dotted var(--lavender-deep);
+            position: relative;
+            top: -2px;
+        }
+
+        /* --- Bridge pair prompts --- */
+        .pair-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            max-width: 1040px;
+            margin: 0 auto 36px;
+        }
+
+        .pair-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 16px 20px;
+            box-shadow: 0 3px 14px var(--glass-shadow);
+            font-size: clamp(14px, 1.6vw, 19px);
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        .pair-row .pair-link {
+            flex: 0 0 34px;
+            border-top: 2.5px dotted var(--lavender-deep);
+        }
+
+        .pair-row span { flex: 1; }
+        .pair-row span:first-child { text-align: right; }
+        .pair-row span:last-child { text-align: left; }
+
+        @media (max-width: 860px) {
+            .pair-grid { grid-template-columns: 1fr; }
+        }
+
+        /* --- Numbered steps (terrain, process, activities) --- */
+        .num-steps {
+            list-style: none;
+            padding: 0;
+            margin: 0 auto;
+            max-width: 760px;
+            counter-reset: numstep;
+            text-align: left;
+        }
+
+        .num-steps li {
+            counter-increment: numstep;
+            position: relative;
+            padding: 11px 0 11px 60px;
+            font-size: clamp(17px, 1.9vw, 24px);
+            line-height: 1.45;
+            color: var(--text-mid);
+        }
+
+        .num-steps li::before {
+            content: counter(numstep, decimal-leading-zero);
+            position: absolute;
+            left: 0;
+            top: 11px;
+            font-family: 'Space Mono', monospace;
+            font-size: clamp(14px, 1.5vw, 18px);
+            font-weight: 700;
+            color: var(--lavender-deep);
+            background: rgba(144, 144, 192, 0.15);
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        .num-steps strong { color: var(--text-dark); font-weight: 600; }
+
+        .num-steps.two-cols {
+            column-count: 2;
+            column-gap: 56px;
+            max-width: 1100px;
+        }
+
+        .num-steps.two-cols li {
+            break-inside: avoid;
+            -webkit-column-break-inside: avoid;
+        }
+
+        @media (max-width: 860px) {
+            .num-steps.two-cols { column-count: 1; }
+        }
+
+        /* --- Terrain cards (hope / fear / tension / path) --- */
+        .terrain-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            max-width: 1160px;
+            margin: 0 auto;
+        }
+
+        .terrain-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 30px 22px 26px;
+            box-shadow: 0 6px 28px var(--glass-shadow);
+            position: relative;
+        }
+
+        .terrain-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 18px;
+            right: 18px;
+            height: 4px;
+            border-radius: 0 0 4px 4px;
+            opacity: 0.9;
+            background: var(--card, var(--lavender));
+        }
+
+        .terrain-num {
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            color: var(--lavender-deep);
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+        }
+
+        .terrain-card h3 {
+            font-family: 'Space Mono', monospace;
+            font-size: clamp(16px, 1.9vw, 23px);
+            color: var(--text-dark);
+            line-height: 1.3;
+        }
+
+        @media (max-width: 900px) {
+            .terrain-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 560px) {
+            .terrain-grid { grid-template-columns: 1fr; }
+        }
+
+        /* --- Two-card grid (melody/dissonance, version 1/2) --- */
+        .duo-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+            max-width: 1080px;
+            margin: 0 auto;
+            text-align: left;
+        }
+
+        .duo-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 18px;
+            padding: 36px 38px 32px;
+            box-shadow: 0 6px 28px var(--glass-shadow);
+            position: relative;
+        }
+
+        .duo-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 22px;
+            right: 22px;
+            height: 4px;
+            border-radius: 0 0 4px 4px;
+            opacity: 0.9;
+            background: var(--card, var(--lavender));
+        }
+
+        .duo-label {
+            font-family: 'Space Mono', monospace;
+            font-size: clamp(11px, 1.3vw, 14px);
+            color: var(--lavender-deep);
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+
+        .duo-title {
+            font-family: 'Space Mono', monospace;
+            font-size: clamp(22px, 2.6vw, 32px);
+            color: var(--text-dark);
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .duo-card ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .duo-card ul li {
+            font-size: clamp(16px, 1.8vw, 22px);
+            line-height: 1.5;
+            color: var(--text-mid);
+            padding: 7px 0 7px 28px;
+            position: relative;
+        }
+
+        .duo-card ul li::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 17px;
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: var(--card, var(--lavender));
+        }
+
+        .duo-card p {
+            font-size: clamp(15px, 1.7vw, 20px);
+            line-height: 1.5;
+            color: var(--text-mid);
+        }
+
+        .duo-card p strong { color: var(--text-dark); font-weight: 600; }
+
+        @media (max-width: 860px) {
+            .duo-grid { grid-template-columns: 1fr; }
+        }
+
+        /* --- Negation stack (Not perfect / Not generic / Not slick) --- */
+        .negation-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 36px auto;
+            max-width: 700px;
+        }
+
+        .negation-line {
+            font-family: 'Space Mono', monospace;
+            font-size: clamp(22px, 3vw, 40px);
+            font-weight: 700;
+            color: var(--text-light);
+            text-decoration: line-through;
+            text-decoration-color: var(--accent-red);
+            text-decoration-thickness: 3px;
+        }
+
+        /* --- Step reveal --- */
+        .reveal-step {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.55s ease, transform 0.55s ease;
+        }
+        .slide.step-1 .reveal-step.s1 { opacity: 1; transform: none; }
+        .slide.step-2 .reveal-step.s2 { opacity: 1; transform: none; }
+        .slide.step-3 .reveal-step.s3 { opacity: 1; transform: none; }
+
+        @media (prefers-reduced-motion: reduce) {
+            .reveal-step { transition: opacity 0.15s ease; transform: none; }
+            .slide.step-1 .reveal-step.s1,
+            .slide.step-2 .reveal-step.s2,
+            .slide.step-3 .reveal-step.s3 { transform: none; }
+        }
+
+        /* --- HUD: progress + counter + hints --- */
+        .hud {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 18px 28px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            z-index: 50;
+            pointer-events: none;
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            color: var(--text-light);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .hud .hud-left,
+        .hud .hud-right {
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .hud .hud-center {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            pointer-events: auto;
+            flex-wrap: wrap;
+        }
+
+        .hud .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--glass-border);
+            transition: background 0.2s, transform 0.2s;
+            cursor: pointer;
+        }
+
+        .hud .dot.active {
+            background: var(--lavender-deep);
+            transform: scale(1.35);
+        }
+
+        .hud .arrow {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 2px 8px var(--glass-shadow);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .hud .arrow:hover { border-color: var(--lavender); transform: translateY(-1px); }
+
+        .hud .arrow svg {
+            width: 14px;
+            height: 14px;
+            stroke: var(--lavender-deep);
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* --- Keyboard hint (fades after first interaction) --- */
+        .kb-hint {
+            position: fixed;
+            top: 22px;
+            right: 28px;
+            z-index: 60;
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            color: var(--text-light);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 999px;
+            padding: 8px 16px;
+            box-shadow: 0 2px 8px var(--glass-shadow);
+            transition: opacity 0.4s ease;
+        }
+
+        .kb-hint.hidden { opacity: 0; pointer-events: none; }
+
+        .kb-hint kbd {
+            font-family: inherit;
+            background: rgba(144,144,192,0.18);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--lavender-deep);
+            margin: 0 2px;
+        }
+
+        /* --- Responsive --- */
+        @media (max-width: 768px) {
+            .slide { padding: 48px 24px 96px; }
+            .highlight-card, .dotted-card { padding: 30px 28px; }
+            .kb-hint { display: none; }
+        }
+
+        @media (max-width: 480px) {
+            .slide { padding: 40px 18px 96px; }
+        }
+
+        /* --- Print: one slide per page --- */
+        @media print {
+            html, body { overflow: visible; height: auto; }
+            .slide {
+                position: relative;
+                opacity: 1 !important;
+                visibility: visible !important;
+                transform: none !important;
+                page-break-after: always;
+                min-height: 100vh;
+            }
+            .reveal-step { opacity: 1 !important; transform: none !important; }
+            .hud, .kb-hint { display: none; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="kb-hint" id="kbHint">
+        Use <kbd>←</kbd> <kbd>→</kbd> to navigate &nbsp;·&nbsp; <kbd>F</kbd> for fullscreen
+    </div>
+
+    <div class="deck" id="deck">
+
+        <!-- 1 · Title -->
+        <section class="slide slide-title active" data-slide="1">
+            <canvas id="rogueCanvas" class="rogue-canvas" aria-hidden="true"></canvas>
+            <div class="slide-inner">
+                <h1>Communication as<br>Rogue Unknowing</h1>
+                <p class="subtitle">How to speak in ways that help people think</p>
+                <div class="rainbow-bar"></div>
+                <p class="presenter">Craig Smith</p>
+                <p class="presenter-roles">Educator &middot; TEDx Speaker &middot; Author</p>
+            </div>
+        </section>
+
+        <!-- 2 · Opening quote -->
+        <section class="slide" data-slide="2">
+            <div class="slide-inner">
+                <p class="big-quote">&ldquo;It ain&rsquo;t what you don&rsquo;t know that gets you into trouble. It&rsquo;s what you know for sure that just ain&rsquo;t so.&rdquo;</p>
+                <p class="big-quote-attr">Often attributed to Mark Twain</p>
+            </div>
+        </section>
+
+        <!-- 3 · Communication isn't one thing -->
+        <section class="slide slide-wide" data-slide="3">
+            <div class="slide-inner">
+                <h2 class="slide-heading">
+                    <span class="section-dot-lg" style="background:var(--accent-blue)"></span>
+                    Communication isn&rsquo;t one thing
+                </h2>
+                <div class="chip-cloud">
+                    <span class="cloud-chip" style="--chip:var(--accent-red)">Interpersonal communication</span>
+                    <span class="cloud-chip" style="--chip:var(--accent-orange)">Teaching</span>
+                    <span class="cloud-chip" style="--chip:var(--accent-yellow)">Public speaking</span>
+                    <span class="cloud-chip" style="--chip:var(--accent-green)">Media interviews</span>
+                    <span class="cloud-chip" style="--chip:var(--accent-blue)">Advocacy</span>
+                    <span class="cloud-chip" style="--chip:var(--lavender)">Writing</span>
+                    <span class="cloud-chip" style="--chip:var(--lavender-deep)">Listening</span>
+                    <span class="cloud-chip" style="--chip:var(--accent-red)">Thinking aloud with others</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4 · This is my way -->
+        <section class="slide" data-slide="4">
+            <div class="slide-inner">
+                <p class="big-quote">&ldquo;This is my way. What is yours?&rdquo;</p>
+                <p class="big-quote-attr">Friedrich Nietzsche</p>
+            </div>
+        </section>
+
+        <!-- 5 · Session map -->
+        <section class="slide slide-wide" data-slide="5">
+            <div class="slide-inner">
+                <h2 class="slide-heading" style="margin-bottom: 36px;">
+                    <span class="section-dot-lg" style="background:var(--lavender)"></span>
+                    Today&rsquo;s path
+                </h2>
+                <ul class="toc-list">
+                    <li class="toc-row">
+                        <span class="toc-num" style="color: var(--accent-green)">01</span>
+                        <span class="toc-name">Map your own atlas</span>
+                    </li>
+                    <li class="toc-row">
+                        <span class="toc-num" style="color: var(--accent-blue)">02</span>
+                        <span class="toc-name">Build bridges between ideas</span>
+                    </li>
+                    <li class="toc-row">
+                        <span class="toc-num" style="color: var(--accent-yellow)">03</span>
+                        <span class="toc-name">Practise multiple perspectives</span>
+                    </li>
+                    <li class="toc-row">
+                        <span class="toc-num" style="color: var(--accent-red)">04</span>
+                        <span class="toc-name">Care for the listener</span>
+                    </li>
+                    <li class="toc-row">
+                        <span class="toc-num" style="color: var(--accent-orange)">05</span>
+                        <span class="toc-name">Balance clarity and difficulty</span>
+                    </li>
+                    <li class="toc-row">
+                        <span class="toc-num" style="color: var(--lavender)">06</span>
+                        <span class="toc-name">Prepare without becoming rigid</span>
+                    </li>
+                    <li class="toc-row">
+                        <span class="toc-num" style="color: var(--lavender-deep)">07</span>
+                        <span class="toc-name">Find your own form</span>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 6 · Activity 1: Atlas of the Self -->
+        <section class="slide slide-wide" data-slide="6">
+            <div class="slide-inner">
+                <div class="activity-badge green">Activity 1 &middot; Atlas of the Self</div>
+                <p class="slide-text">Draw a map of yourself as a <strong>communicator</strong>.</p>
+                <div class="chip-cloud" style="margin-top: 32px;">
+                    <span class="cloud-chip" style="--chip:var(--accent-red)">Music</span>
+                    <span class="cloud-chip" style="--chip:var(--accent-orange)">Books / articles / ideas</span>
+                    <span class="cloud-chip" style="--chip:var(--accent-yellow)">Media</span>
+                    <span class="cloud-chip" style="--chip:var(--accent-green)">Politics / social issues</span>
+                    <span class="cloud-chip" style="--chip:var(--accent-blue)">Art / culture</span>
+                    <span class="cloud-chip" style="--chip:var(--lavender)">Technologies</span>
+                    <span class="cloud-chip" style="--chip:var(--lavender-deep)">Conversations</span>
+                    <span class="cloud-chip" style="--chip:var(--accent-red)">Places</span>
+                    <span class="cloud-chip" style="--chip:var(--accent-blue)">People</span>
+                    <span class="cloud-chip dashed">Things you avoid</span>
+                    <span class="cloud-chip dashed">Things you are curious about</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7 · Dotted lines -->
+        <section class="slide" data-slide="7">
+            <div class="slide-inner">
+                <h2 class="slide-heading" style="margin-bottom: 24px;">
+                    <span class="section-dot-lg" style="background:var(--accent-green)"></span>
+                    Add dotted lines
+                </h2>
+                <p class="slide-text">Mark the <strong>edges of your curiosity</strong>.</p>
+                <p class="big-quote" style="font-size: clamp(1.3rem, 2.8vw, 2.1rem); margin-top: 28px;">What are you drawn to, but have not yet explored?</p>
+                <div class="dotted-card">
+                    <div class="dotted-label">// Out past the mapped edges</div>
+                    <ul class="big-list green" style="margin: 0;">
+                        <li>A field you think you are &ldquo;not good at&rdquo;</li>
+                        <li>A kind of art you do not understand</li>
+                        <li>A political question you avoid</li>
+                        <li>A technology you feel uncertain about</li>
+                        <li>A difficult book, idea, or practice</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 8 · Pair share -->
+        <section class="slide" data-slide="8">
+            <div class="slide-inner">
+                <h2 class="slide-heading">
+                    <span class="section-dot-lg" style="background:var(--accent-green)"></span>
+                    Pair share
+                </h2>
+                <p class="slide-text">Choose <strong>one part of your atlas</strong>.</p>
+                <div class="highlight-card" style="text-align: center;">
+                    <p>Explain it to another person in a way that helps them <strong>care about it</strong>.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 9 · Key idea -->
+        <section class="slide" data-slide="9">
+            <div class="slide-inner">
+                <p class="key-idea-marker">// Key idea</p>
+                <p class="key-idea">Your atlas determines the bridges you can build.</p>
+                <hr class="dotted-rule">
+            </div>
+        </section>
+
+        <!-- 10 · Activity 2: The Bridge -->
+        <section class="slide" data-slide="10">
+            <div class="slide-inner">
+                <div class="activity-badge blue">Activity 2 &middot; The Bridge</div>
+                <p class="slide-text-sm">Good communicators often create insight by connecting things that <strong>do not seem to belong together</strong>.</p>
+                <div class="bridge-stage">
+                    <div class="bridge-node">One idea</div>
+                    <div class="bridge-span"></div>
+                    <div class="bridge-node">An unrelated idea</div>
+                </div>
+                <div class="highlight-card" style="text-align: center; margin-top: 44px;">
+                    <p>Build a <strong>meaningful bridge</strong> between two unrelated ideas.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 11 · Bridge prompts -->
+        <section class="slide slide-wide" data-slide="11">
+            <div class="slide-inner">
+                <h2 class="slide-heading" style="margin-bottom: 32px;">
+                    <span class="section-dot-lg" style="background:var(--accent-blue)"></span>
+                    Build a bridge &mdash; choose one pair
+                </h2>
+                <div class="pair-grid">
+                    <div class="pair-row"><span>Autism support</span><span class="pair-link"></span><span>Video games</span></div>
+                    <div class="pair-row"><span>Artificial intelligence</span><span class="pair-link"></span><span>Gardening</span></div>
+                    <div class="pair-row"><span>Water supply</span><span class="pair-link"></span><span>Education</span></div>
+                    <div class="pair-row"><span>Mathematics</span><span class="pair-link"></span><span>Poetry</span></div>
+                    <div class="pair-row"><span>Music production</span><span class="pair-link"></span><span>Classroom behaviour</span></div>
+                    <div class="pair-row"><span>Public speaking</span><span class="pair-link"></span><span>Walking</span></div>
+                    <div class="pair-row"><span>Social media</span><span class="pair-link"></span><span>Memory</span></div>
+                    <div class="pair-row"><span>Architecture</span><span class="pair-link"></span><span>Empathy</span></div>
+                </div>
+                <ol class="num-steps" style="max-width: 820px;">
+                    <li>What <strong>connects</strong> them?</li>
+                    <li>Why does the connection <strong>matter</strong>?</li>
+                    <li>How could it help someone <strong>understand something differently</strong>?</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- 12 · Key idea -->
+        <section class="slide" data-slide="12">
+            <div class="slide-inner">
+                <p class="key-idea-marker">// Key idea</p>
+                <p class="key-idea">Insight is often a connection someone else has not made yet.</p>
+                <hr class="dotted-rule">
+            </div>
+        </section>
+
+        <!-- 13 · AI is not simple -->
+        <section class="slide slide-wide" data-slide="13">
+            <div class="slide-inner">
+                <h2 class="slide-heading">
+                    <span class="section-dot-lg" style="background:var(--accent-yellow)"></span>
+                    AI is not simple
+                </h2>
+                <p class="slide-text-sm">AI touches:</p>
+                <div class="chip-cloud">
+                    <span class="cloud-chip" style="--chip:var(--accent-red)">Creativity</span>
+                    <span class="cloud-chip" style="--chip:var(--accent-orange)">Education</span>
+                    <span class="cloud-chip" style="--chip:var(--accent-yellow)">Work</span>
+                    <span class="cloud-chip" style="--chip:var(--accent-green)">Equity</span>
+                    <span class="cloud-chip" style="--chip:var(--accent-blue)">Environment</span>
+                    <span class="cloud-chip" style="--chip:var(--lavender)">Water</span>
+                    <span class="cloud-chip" style="--chip:var(--lavender-deep)">Data centres</span>
+                    <span class="cloud-chip" style="--chip:var(--accent-red)">Disability &amp; inclusion</span>
+                    <span class="cloud-chip" style="--chip:var(--accent-green)">Academic integrity</span>
+                    <span class="cloud-chip" style="--chip:var(--accent-blue)">Power</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 14 · Activity 3: Perspectives you do not hold -->
+        <section class="slide slide-wide" data-slide="14">
+            <div class="slide-inner">
+                <div class="activity-badge yellow">Activity 3 &middot; Perspectives you do not hold</div>
+                <p class="slide-text-sm">Write down <strong>three perspectives on AI</strong> that you do not personally hold, but can understand.</p>
+                <ul class="big-list two-cols yellow" style="margin-top: 36px;">
+                    <li>AI will democratise creativity</li>
+                    <li>AI will flatten culture</li>
+                    <li>AI will support accessibility</li>
+                    <li>AI will widen inequality</li>
+                    <li>AI will reduce cognitive effort</li>
+                    <li>AI will create new forms of expression</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 15 · Map the terrain -->
+        <section class="slide slide-wide" data-slide="15">
+            <div class="slide-inner">
+                <h2 class="slide-heading" style="margin-bottom: 20px;">
+                    <span class="section-dot-lg" style="background:var(--accent-yellow)"></span>
+                    Before you argue, map the terrain
+                </h2>
+                <p class="slide-text-sm" style="margin-bottom: 40px;">A useful communication pattern:</p>
+                <div class="terrain-grid">
+                    <div class="terrain-card" style="--card:var(--accent-green)">
+                        <div class="terrain-num">// 01</div>
+                        <h3>Name the hope</h3>
+                    </div>
+                    <div class="terrain-card" style="--card:var(--accent-red)">
+                        <div class="terrain-num">// 02</div>
+                        <h3>Name the fear</h3>
+                    </div>
+                    <div class="terrain-card" style="--card:var(--accent-yellow)">
+                        <div class="terrain-num">// 03</div>
+                        <h3>Name the tension</h3>
+                    </div>
+                    <div class="terrain-card" style="--card:var(--accent-blue)">
+                        <div class="terrain-num">// 04</div>
+                        <h3>Offer your path through it</h3>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 16 · Key idea -->
+        <section class="slide" data-slide="16">
+            <div class="slide-inner">
+                <p class="key-idea-marker">// Key idea</p>
+                <p class="key-idea">Good communication starts with seeing, not speaking.</p>
+                <hr class="dotted-rule">
+            </div>
+        </section>
+
+        <!-- 17 · Communication as care -->
+        <section class="slide" data-slide="17">
+            <div class="slide-inner">
+                <h2 class="slide-heading" style="margin-bottom: 24px;">
+                    <span class="section-dot-lg" style="background:var(--accent-red)"></span>
+                    Communication is an act of care
+                </h2>
+                <p class="slide-text-sm" style="margin-bottom: 8px;">Care sounds like:</p>
+                <ul class="big-list red" style="font-style: italic; font-family: 'Newsreader', Georgia, serif;">
+                    <li>Are they with me?</li>
+                    <li>Am I going too fast?</li>
+                    <li>Did that term land?</li>
+                    <li>Have I assumed background knowledge?</li>
+                    <li>Am I giving enough structure?</li>
+                    <li>Am I respecting their intelligence?</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 18 · Accessibility is not simplification -->
+        <section class="slide" data-slide="18">
+            <div class="slide-inner">
+                <p class="key-idea-marker">// Accessibility is not simplification</p>
+                <p class="key-idea">Make ideas easier to enter without making them smaller.</p>
+                <hr class="dotted-rule">
+            </div>
+        </section>
+
+        <!-- 19 · Mini demonstration -->
+        <section class="slide" data-slide="19" data-steps="2">
+            <div class="slide-inner">
+                <h2 class="slide-heading" style="margin-bottom: 28px;">
+                    <span class="section-dot-lg" style="background:var(--accent-red)"></span>
+                    What happens when care disappears?
+                </h2>
+                <div class="highlight-card" style="text-align: center;">
+                    <p><strong>Demonstration:</strong> a complex concept &mdash; too quickly, with jargon, no pauses, no framing.</p>
+                </div>
+                <p class="big-quote reveal-step s1" style="font-size: clamp(1.4rem, 3vw, 2.3rem); margin: 32px auto;">Who did I lose?</p>
+                <div class="reveal-step s2">
+                    <p class="slide-text-sm" style="margin-bottom: 12px;">Then again:</p>
+                    <div class="chip-cloud" style="margin-top: 0;">
+                        <span class="cloud-chip" style="--chip:var(--accent-green)">Slower</span>
+                        <span class="cloud-chip" style="--chip:var(--accent-blue)">With context</span>
+                        <span class="cloud-chip" style="--chip:var(--accent-yellow)">With one example</span>
+                        <span class="cloud-chip" style="--chip:var(--lavender-deep)">With a check for understanding</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 20 · Key idea -->
+        <section class="slide" data-slide="20">
+            <div class="slide-inner">
+                <p class="key-idea-marker">// Key idea</p>
+                <p class="key-idea">The best communicators are not the ones who say the most. They are the ones who notice the most.</p>
+                <hr class="dotted-rule">
+            </div>
+        </section>
+
+        <!-- 21 · Clarity is not enough -->
+        <section class="slide" data-slide="21">
+            <div class="slide-inner">
+                <h2 class="slide-heading" style="margin-bottom: 24px;">
+                    <span class="section-dot-lg" style="background:var(--accent-orange)"></span>
+                    Clarity is not enough
+                </h2>
+                <p class="slide-text-sm">If communication is only simple, safe, and predictable, it can become <strong>stale</strong>.</p>
+                <p class="slide-text-sm" style="margin-top: 18px;">Good communication also needs:</p>
+                <div class="chip-cloud" style="margin-top: 28px;">
+                    <span class="cloud-chip" style="--chip:var(--accent-red)">Challenge</span>
+                    <span class="cloud-chip" style="--chip:var(--accent-orange)">Risk</span>
+                    <span class="cloud-chip" style="--chip:var(--accent-yellow)">Difficulty</span>
+                    <span class="cloud-chip" style="--chip:var(--accent-green)">Surprise</span>
+                    <span class="cloud-chip" style="--chip:var(--accent-blue)">Unresolved tension</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 22 · Melody and dissonance -->
+        <section class="slide slide-wide" data-slide="22">
+            <div class="slide-inner">
+                <h2 class="slide-heading" style="margin-bottom: 36px;">
+                    <span class="section-dot-lg" style="background:var(--accent-orange)"></span>
+                    Melody and dissonance
+                </h2>
+                <div class="duo-grid">
+                    <div class="duo-card" style="--card:var(--accent-blue)">
+                        <div class="duo-label">// Melody</div>
+                        <ul>
+                            <li>Clarity</li>
+                            <li>Repetition</li>
+                            <li>Structure</li>
+                            <li>Familiarity</li>
+                        </ul>
+                    </div>
+                    <div class="duo-card" style="--card:var(--accent-red)">
+                        <div class="duo-label">// Dissonance</div>
+                        <ul>
+                            <li>Difficulty</li>
+                            <li>Strangeness</li>
+                            <li>Tension</li>
+                            <li>New possibility</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 23 · Productive difficulty -->
+        <section class="slide" data-slide="23">
+            <div class="slide-inner">
+                <p class="key-idea-marker">// Productive difficulty</p>
+                <p class="key-idea">If your audience understands everything immediately, you may not have taken them anywhere.</p>
+                <hr class="dotted-rule">
+            </div>
+        </section>
+
+        <!-- 24 · Activity 4: Clarity / Challenge Flip -->
+        <section class="slide slide-wide" data-slide="24">
+            <div class="slide-inner">
+                <div class="activity-badge red">Activity 4 &middot; Clarity / Challenge Flip</div>
+                <p class="slide-text-sm" style="margin-bottom: 36px;">Choose <strong>one idea</strong>.</p>
+                <div class="duo-grid">
+                    <div class="duo-card" style="--card:var(--accent-blue)">
+                        <div class="duo-label">// Version 1</div>
+                        <p style="font-size: clamp(17px, 1.9vw, 24px);">Explain it as <strong>clearly and accessibly</strong> as possible.</p>
+                    </div>
+                    <div class="duo-card" style="--card:var(--accent-red)">
+                        <div class="duo-label">// Version 2</div>
+                        <p style="margin-bottom: 14px; font-size: clamp(17px, 1.9vw, 24px);">Explain it again, but add <strong>one productive difficulty</strong>:</p>
+                        <ul>
+                            <li>A metaphor</li>
+                            <li>A strange connection</li>
+                            <li>A philosophical question</li>
+                            <li>A challenging implication</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 25 · How I prepared my TEDx talk -->
+        <section class="slide" data-slide="25">
+            <div class="slide-inner">
+                <h2 class="slide-heading" style="margin-bottom: 36px;">
+                    <span class="section-dot-lg" style="background:var(--lavender)"></span>
+                    Preparing without killing the talk
+                </h2>
+                <p class="big-quote" style="font-size: clamp(1.4rem, 3.2vw, 2.5rem);">I did not want to memorise a script.<br>I wanted to learn how to move through the ideas.</p>
+            </div>
+        </section>
+
+        <!-- 26 · The process -->
+        <section class="slide slide-wide" data-slide="26">
+            <div class="slide-inner">
+                <h2 class="slide-heading" style="margin-bottom: 36px;">
+                    <span class="section-dot-lg" style="background:var(--lavender)"></span>
+                    My process
+                </h2>
+                <ol class="num-steps two-cols">
+                    <li>Think <strong>in motion</strong></li>
+                    <li>Talk ideas through <strong>with AI</strong></li>
+                    <li>Write <strong>rough sentences</strong></li>
+                    <li>Say them aloud <strong>from memory</strong></li>
+                    <li>Listen <strong>for rhythm</strong></li>
+                    <li>Record the <strong>living version</strong></li>
+                    <li><strong>Transcribe</strong> it</li>
+                    <li>Replace the <strong>written version</strong></li>
+                    <li>Build <strong>anchor points</strong>, not a full script</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- 27 · Key idea -->
+        <section class="slide" data-slide="27">
+            <div class="slide-inner">
+                <p class="key-idea-marker">// Key idea</p>
+                <p class="key-idea">I was not trying to remember what I wrote. I was trying to remember what I meant.</p>
+                <hr class="dotted-rule">
+            </div>
+        </section>
+
+        <!-- 28 · Activity 5: Speak it alive -->
+        <section class="slide" data-slide="28">
+            <div class="slide-inner">
+                <div class="activity-badge lav">Activity 5 &middot; Speak it alive</div>
+                <ol class="num-steps" style="margin-top: 12px;">
+                    <li>Write one idea in <strong>2&ndash;3 sentences</strong></li>
+                    <li>Put the writing <strong>away</strong></li>
+                    <li>Say the idea aloud <strong>from memory</strong></li>
+                    <li>Notice <strong>how it changes</strong></li>
+                    <li>Rewrite the <strong>spoken version</strong></li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- 29 · I distrust perfect systems -->
+        <section class="slide" data-slide="29">
+            <div class="slide-inner">
+                <h2 class="slide-heading" style="margin-bottom: 36px;">
+                    <span class="section-dot-lg" style="background:var(--lavender-deep)"></span>
+                    I distrust perfect systems
+                </h2>
+                <p class="slide-text">Frameworks can help.</p>
+                <div class="highlight-card" style="text-align: center;">
+                    <p>But no framework can perfectly hold a <strong>living idea</strong>.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 30 · The talk teaches the audience how to hear it -->
+        <section class="slide" data-slide="30">
+            <div class="slide-inner">
+                <p class="key-idea-marker">// Form</p>
+                <p class="key-idea">The best talks teach the audience how to hear them.</p>
+                <hr class="dotted-rule">
+            </div>
+        </section>
+
+        <!-- 31 · Learning how to wobble -->
+        <section class="slide" data-slide="31">
+            <div class="slide-inner">
+                <h2 class="slide-heading" style="margin-bottom: 36px;">
+                    <span class="section-dot-lg" style="background:var(--lavender-deep)"></span>
+                    Learning how to wobble
+                </h2>
+                <p class="big-quote" style="font-size: clamp(1.4rem, 3.2vw, 2.5rem);">If you are not willing to risk being a bad communicator sometimes, you may never become a good one.</p>
+            </div>
+        </section>
+
+        <!-- 32 · What are they expecting? -->
+        <section class="slide" data-slide="32" data-steps="1">
+            <div class="slide-inner">
+                <h2 class="slide-heading" style="margin-bottom: 20px;">
+                    <span class="section-dot-lg" style="background:var(--accent-green)"></span>
+                    What are they expecting from you?
+                </h2>
+                <div class="negation-stack">
+                    <span class="negation-line">Not perfect.</span>
+                    <span class="negation-line">Not generic.</span>
+                    <span class="negation-line">Not slick.</span>
+                </div>
+                <p class="big-quote reveal-step s1" style="font-size: clamp(1.3rem, 2.9vw, 2.2rem);">They are looking for someone real, thoughtful, and worth listening to.</p>
+            </div>
+        </section>
+
+        <!-- 33 · In an age of AI -->
+        <section class="slide" data-slide="33">
+            <div class="slide-inner">
+                <h2 class="slide-heading" style="margin-bottom: 36px;">
+                    <span class="section-dot-lg" style="background:var(--accent-green)"></span>
+                    In an age of AI
+                </h2>
+                <p class="slide-text">AI can generate something that <strong>sounds right</strong>.</p>
+                <div class="highlight-card" style="text-align: center;">
+                    <p>But it cannot generate something that is <strong>you</strong>.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 34 · Final reflection -->
+        <section class="slide" data-slide="34">
+            <div class="slide-inner">
+                <h2 class="slide-heading" style="margin-bottom: 24px;">
+                    <span class="section-dot-lg" style="background:var(--lavender)"></span>
+                    Final reflection
+                </h2>
+                <p class="slide-text-sm" style="margin-bottom: 8px;">A good communicator asks:</p>
+                <ul class="big-list" style="font-style: italic; font-family: 'Newsreader', Georgia, serif;">
+                    <li>What do I care about?</li>
+                    <li>What perspectives can I hold?</li>
+                    <li>How can I help this audience understand?</li>
+                    <li>Where can I take a useful risk?</li>
+                    <li>What is true to my way of seeing?</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 35 · Closing -->
+        <section class="slide" data-slide="35">
+            <div class="slide-inner">
+                <p class="big-quote">This is my way.<br>What is yours?</p>
+                <div class="rainbow-bar"></div>
+            </div>
+        </section>
+
+    </div>
+
+    <div class="hud" id="hud">
+        <div class="hud-left">
+            <button class="arrow" id="prevBtn" aria-label="Previous slide">
+                <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <span id="counter">1 / 35</span>
+        </div>
+        <div class="hud-center" id="dots"></div>
+        <div class="hud-right">
+            <span>Rogue Unknowing</span>
+            <button class="arrow" id="nextBtn" aria-label="Next slide">
+                <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+            var total = slides.length;
+            var current = 0;
+            var currentStep = 0;
+            var counter = document.getElementById('counter');
+            var dotsWrap = document.getElementById('dots');
+            var kbHint = document.getElementById('kbHint');
+            var prevBtn = document.getElementById('prevBtn');
+            var nextBtn = document.getElementById('nextBtn');
+            var hintHidden = false;
+
+            // Build dots
+            slides.forEach(function (s, i) {
+                var d = document.createElement('span');
+                d.className = 'dot';
+                d.setAttribute('role', 'button');
+                d.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+                d.addEventListener('click', function () { goTo(i); });
+                dotsWrap.appendChild(d);
+            });
+
+            function updateHUD() {
+                counter.textContent = (current + 1) + ' / ' + total;
+                var dots = dotsWrap.querySelectorAll('.dot');
+                dots.forEach(function (d, i) {
+                    d.classList.toggle('active', i === current);
+                });
+            }
+
+            function maxSteps(slide) {
+                return parseInt(slide.dataset.steps || '0', 10);
+            }
+
+            function clearSteps(slide) {
+                var max = maxSteps(slide);
+                for (var i = 1; i <= max; i++) {
+                    slide.classList.remove('step-' + i);
+                }
+            }
+
+            function applySteps(slide, n) {
+                for (var i = 1; i <= n; i++) {
+                    slide.classList.add('step-' + i);
+                }
+            }
+
+            function goTo(idx, landAtEnd) {
+                if (idx < 0 || idx >= total || idx === current) return;
+                clearSteps(slides[current]);
+                slides[current].classList.remove('active');
+                current = idx;
+                var max = maxSteps(slides[current]);
+                if (landAtEnd && max > 0) {
+                    currentStep = max;
+                    applySteps(slides[current], max);
+                } else {
+                    currentStep = 0;
+                }
+                slides[current].classList.add('active');
+                updateHUD();
+                if (history.replaceState) {
+                    history.replaceState(null, '', '#' + (current + 1));
+                }
+            }
+
+            function next() {
+                var slide = slides[current];
+                var max = maxSteps(slide);
+                if (currentStep < max) {
+                    currentStep++;
+                    slide.classList.add('step-' + currentStep);
+                    return;
+                }
+                goTo(current + 1);
+            }
+
+            function prev() {
+                if (currentStep > 0) {
+                    slides[current].classList.remove('step-' + currentStep);
+                    currentStep--;
+                    return;
+                }
+                goTo(current - 1, true);
+            }
+
+            function first() { goTo(0); }
+            function last() { goTo(total - 1); }
+
+            function dismissHint() {
+                if (hintHidden) return;
+                hintHidden = true;
+                kbHint.classList.add('hidden');
+            }
+
+            // Keyboard nav
+            window.addEventListener('keydown', function (e) {
+                var t = e.target;
+                if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+
+                switch (e.key) {
+                    case 'ArrowRight':
+                    case 'PageDown':
+                    case ' ':
+                        e.preventDefault();
+                        next();
+                        dismissHint();
+                        break;
+                    case 'ArrowLeft':
+                    case 'PageUp':
+                        e.preventDefault();
+                        prev();
+                        dismissHint();
+                        break;
+                    case 'Home':
+                        e.preventDefault();
+                        first();
+                        dismissHint();
+                        break;
+                    case 'End':
+                        e.preventDefault();
+                        last();
+                        dismissHint();
+                        break;
+                    case 'f':
+                    case 'F':
+                        if (!document.fullscreenElement) {
+                            document.documentElement.requestFullscreen && document.documentElement.requestFullscreen();
+                        } else {
+                            document.exitFullscreen && document.exitFullscreen();
+                        }
+                        dismissHint();
+                        break;
+                }
+            });
+
+            // Button nav
+            prevBtn.addEventListener('click', function () { prev(); dismissHint(); });
+            nextBtn.addEventListener('click', function () { next(); dismissHint(); });
+
+            // Touch / swipe
+            var touchStartX = null;
+            window.addEventListener('touchstart', function (e) {
+                if (e.touches.length === 1) touchStartX = e.touches[0].clientX;
+            }, { passive: true });
+            window.addEventListener('touchend', function (e) {
+                if (touchStartX === null) return;
+                var dx = e.changedTouches[0].clientX - touchStartX;
+                if (Math.abs(dx) > 50) {
+                    if (dx < 0) next(); else prev();
+                    dismissHint();
+                }
+                touchStartX = null;
+            });
+
+            // Hash-based deep link
+            function fromHash() {
+                var n = parseInt((location.hash || '').replace('#', ''), 10);
+                if (!isNaN(n) && n >= 1 && n <= total) goTo(n - 1);
+            }
+            window.addEventListener('hashchange', fromHash);
+            fromHash();
+
+            updateHUD();
+        })();
+    </script>
+
+    <!-- Wandering rogue path on the title slide: a dotted line that doesn't know
+         where it's going, leaving a fading trail behind it -->
+    <script>
+        (function () {
+            var canvas = document.getElementById('rogueCanvas');
+            if (!canvas) return;
+            var section = canvas.closest('.slide');
+            var ctx = canvas.getContext('2d');
+            var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            var COLORS = ['#5ab97a', '#5a7ec2', '#9090c0', '#e8c547', '#d64a4a', '#cc785c'];
+            var dpr = Math.max(1, window.devicePixelRatio || 1);
+            var w = 0, h = 0;
+            var walker = null;
+            var dots = [];            // {x, y, born, color}
+            var MAX_AGE = 14000;      // ms before a dot fades out completely
+            var STEP = 14;            // px between dots
+            var lastMove = 0;
+            var MOVE_MS = 55;
+
+            function resize() {
+                w = section.clientWidth;
+                h = section.clientHeight;
+                if (!w || !h) return;
+                canvas.width = Math.round(w * dpr);
+                canvas.height = Math.round(h * dpr);
+                canvas.style.width = w + 'px';
+                canvas.style.height = h + 'px';
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                spawn();
+            }
+
+            function spawn() {
+                var edge = Math.floor(Math.random() * 4);
+                var x = edge === 1 ? w : edge === 3 ? 0 : Math.random() * w;
+                var y = edge === 0 ? 0 : edge === 2 ? h : Math.random() * h;
+                walker = {
+                    x: x, y: y,
+                    heading: Math.atan2(h / 2 - y, w / 2 - x) + (Math.random() - 0.5),
+                    color: COLORS[Math.floor(Math.random() * COLORS.length)],
+                    colorIdx: 0
+                };
+            }
+
+            function move(now) {
+                if (!walker) return;
+                // wander: drift the heading, gently repelled by the edges
+                walker.heading += (Math.random() - 0.5) * 0.9;
+                var margin = 60;
+                if (walker.x < margin) walker.heading = walker.heading * 0.5;
+                if (walker.x > w - margin) walker.heading = Math.PI - (Math.PI - walker.heading) * 0.5;
+                if (walker.y < margin && Math.sin(walker.heading) < 0) walker.heading = -walker.heading;
+                if (walker.y > h - margin && Math.sin(walker.heading) > 0) walker.heading = -walker.heading;
+
+                walker.x += Math.cos(walker.heading) * STEP;
+                walker.y += Math.sin(walker.heading) * STEP;
+
+                if (walker.x < -40 || walker.x > w + 40 || walker.y < -40 || walker.y > h + 40) {
+                    spawn();
+                    return;
+                }
+
+                // occasionally change colour mid-journey: a new idea joins the path
+                if (Math.random() < 0.012) {
+                    walker.color = COLORS[Math.floor(Math.random() * COLORS.length)];
+                }
+
+                dots.push({ x: walker.x, y: walker.y, born: now, color: walker.color });
+                if (dots.length > 900) dots.splice(0, dots.length - 900);
+            }
+
+            function draw(now) {
+                ctx.clearRect(0, 0, w, h);
+                for (var i = 0; i < dots.length; i++) {
+                    var d = dots[i];
+                    var age = now - d.born;
+                    if (age > MAX_AGE) continue;
+                    var alpha = 0.34 * Math.max(0, Math.min(1, 1 - age / MAX_AGE));
+                    ctx.globalAlpha = alpha;
+                    ctx.fillStyle = d.color;
+                    ctx.beginPath();
+                    ctx.arc(d.x, d.y, 3, 0, 6.2832);
+                    ctx.fill();
+                }
+                // the walker itself, a little brighter
+                if (walker) {
+                    ctx.globalAlpha = 0.8;
+                    ctx.fillStyle = walker.color;
+                    ctx.beginPath();
+                    ctx.arc(walker.x, walker.y, 4.5, 0, 6.2832);
+                    ctx.fill();
+                }
+                ctx.globalAlpha = 1;
+            }
+
+            function frame(t) {
+                requestAnimationFrame(frame);
+                if (document.hidden || !section.classList.contains('active')) return;
+                if (!reduce && t - lastMove >= MOVE_MS) { lastMove = t; move(t); }
+                draw(t);
+            }
+
+            resize();
+            window.addEventListener('resize', resize);
+            requestAnimationFrame(frame);
+
+            // reduced motion: draw one static gentle path across the slide
+            if (reduce) {
+                setTimeout(function () {
+                    var now = performance.now();
+                    var px = 0, py = h * 0.7, heading = -0.25;
+                    while (px < w) {
+                        heading += (Math.random() - 0.5) * 0.4;
+                        heading = Math.max(-0.7, Math.min(0.5, heading));
+                        px += Math.cos(heading) * STEP;
+                        py += Math.sin(heading) * STEP;
+                        dots.push({ x: px, y: py, born: now + MAX_AGE * 9, color: COLORS[Math.floor(px / w * COLORS.length) % COLORS.length] });
+                    }
+                    draw(now + MAX_AGE * 9 + 1);
+                }, 80);
+            }
+        })();
+    </script>
+
+</body>
+</html>
