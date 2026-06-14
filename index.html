@@ -682,65 +682,79 @@
             .duo-grid { grid-template-columns: 1fr; }
         }
 
-        /* --- Embedded video --- */
-        .video-frame {
+        /* --- Video poster (image linking out to the talk) --- */
+        .video-poster {
             position: relative;
+            display: block;
             width: 100%;
-            max-width: 1100px;
+            max-width: 1000px;
             margin: 0 auto;
-            aspect-ratio: 16 / 9;
             border-radius: 16px;
             overflow: hidden;
             box-shadow: 0 14px 48px rgba(107, 107, 157, 0.28);
-            background: #000;
-        }
-
-        .video-frame iframe {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            border: 0;
-        }
-
-        .video-fallback {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 18px;
             text-decoration: none;
-            color: #fff;
-            font-family: 'Space Mono', monospace;
-            font-size: clamp(15px, 1.8vw, 22px);
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-align: center;
-            background: radial-gradient(circle at 50% 45%, rgba(144,144,192,0.25) 0%, rgba(0,0,0,0) 60%), #14141e;
+            line-height: 0;
         }
 
-        .video-fallback small {
+        .video-poster img {
             display: block;
-            margin-top: 10px;
-            font-weight: 400;
-            font-size: clamp(11px, 1.2vw, 14px);
-            color: rgba(255,255,255,0.55);
-            letter-spacing: 0.5px;
+            width: 100%;
+            height: auto;
         }
 
-        .video-fallback-play {
-            width: clamp(64px, 8vw, 92px);
-            height: clamp(64px, 8vw, 92px);
+        .video-poster::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(20, 20, 30, 0.10);
+            transition: background 0.25s ease;
+        }
+
+        .video-poster:hover::after { background: rgba(20, 20, 30, 0.02); }
+
+        .video-poster-play {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+            width: clamp(64px, 8vw, 96px);
+            height: clamp(64px, 8vw, 96px);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: clamp(22px, 3vw, 34px);
+            color: #fff;
             background: var(--accent-red);
-            box-shadow: 0 10px 36px rgba(214, 74, 74, 0.45);
+            box-shadow: 0 10px 36px rgba(214, 74, 74, 0.5);
             padding-left: 6px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .video-poster:hover .video-poster-play {
+            transform: translate(-50%, -50%) scale(1.08);
+            box-shadow: 0 14px 44px rgba(214, 74, 74, 0.6);
+        }
+
+        .video-poster-label {
+            position: absolute;
+            bottom: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+            font-family: 'Space Mono', monospace;
+            font-size: clamp(12px, 1.4vw, 16px);
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #fff;
+            background: rgba(20, 20, 30, 0.55);
+            padding: 8px 18px;
+            border-radius: 999px;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            line-height: 1;
         }
 
         /* --- Closing links --- */
@@ -982,14 +996,6 @@
             </div>
         </section>
 
-        <!-- 4 · This is my way -->
-        <section class="slide" data-slide="4">
-            <div class="slide-inner">
-                <p class="big-quote">&ldquo;This is my way. What is yours?&rdquo;</p>
-                <p class="big-quote-attr">Friedrich Nietzsche</p>
-            </div>
-        </section>
-
         <!-- 5 · Session map -->
         <section class="slide slide-wide" data-slide="5">
             <div class="slide-inner">
@@ -1027,6 +1033,14 @@
                         <span class="toc-name">Find your own form</span>
                     </li>
                 </ul>
+            </div>
+        </section>
+
+        <!-- 4 · This is my way -->
+        <section class="slide" data-slide="4">
+            <div class="slide-inner">
+                <p class="big-quote">&ldquo;This is my way. What is yours?&rdquo;</p>
+                <p class="big-quote-attr">Friedrich Nietzsche</p>
             </div>
         </section>
 
@@ -1127,9 +1141,11 @@
         <!-- Video interlude -->
         <section class="slide slide-wide" data-slide="12.5">
             <div class="slide-inner">
-                <div class="video-frame" id="videoFrame">
-                    <iframe id="ytVideo" title="Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
-                </div>
+                <a class="video-poster" href="https://youtu.be/WCqCMUAmpuc" target="_blank" rel="noopener" aria-label="Watch the TEDx talk on YouTube">
+                    <img src="TEDx.png" alt="TEDx talk">
+                    <span class="video-poster-play" aria-hidden="true">▶</span>
+                    <span class="video-poster-label">Watch the talk</span>
+                </a>
             </div>
         </section>
 
@@ -1514,28 +1530,6 @@
     </div>
 
     <script>
-        // YouTube embeds need a Referer header (error 153 without one). A file://
-        // page can't send one, so local previews get a watch-on-YouTube card instead.
-        (function () {
-            var frame = document.getElementById('videoFrame');
-            var iframe = document.getElementById('ytVideo');
-            if (!frame || !iframe) return;
-            var id = 'WCqCMUAmpuc';
-            if (location.protocol === 'file:') {
-                var a = document.createElement('a');
-                a.className = 'video-fallback';
-                a.href = 'https://youtu.be/' + id;
-                a.target = '_blank';
-                a.rel = 'noopener';
-                a.innerHTML = '<span class="video-fallback-play">▶</span><span>Watch on YouTube<small>Embedded playback works on the live site &mdash; local previews can’t embed video</small></span>';
-                frame.replaceChild(a, iframe);
-            } else {
-                iframe.src = 'https://www.youtube.com/embed/' + id + '?rel=0&enablejsapi=1&origin=' + encodeURIComponent(location.origin);
-            }
-        })();
-    </script>
-
-    <script>
         (function () {
             var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
             var total = slides.length;
@@ -1583,17 +1577,9 @@
                 }
             }
 
-            function pauseVideosIn(slide) {
-                var iframes = slide.querySelectorAll('iframe[src*="youtube.com"]');
-                iframes.forEach(function (f) {
-                    try { f.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*'); } catch (e) {}
-                });
-            }
-
             function goTo(idx, landAtEnd) {
                 if (idx < 0 || idx >= total || idx === current) return;
                 clearSteps(slides[current]);
-                pauseVideosIn(slides[current]);
                 slides[current].classList.remove('active');
                 current = idx;
                 var max = maxSteps(slides[current]);
